@@ -19,6 +19,30 @@
   <meta property="profile:first_name" content="Nicholas">
   <meta property="profile:last_name" content="Zhao">
   <meta property="profile:username" content="nicholaszhao-19">
+  <meta name="theme-color" content="#f7f7f4" id="theme-color">
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var theme = "light";
+
+      root.classList.add("js");
+
+      try {
+        var savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "light" || savedTheme === "dark") {
+          theme = savedTheme;
+        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          theme = "dark";
+        }
+      } catch (error) {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          theme = "dark";
+        }
+      }
+
+      root.dataset.theme = theme;
+    }());
+  </script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -33,6 +57,10 @@
           <a href="#projects">GitHub Repo</a>
           <a href="#talks">Talks</a>
         </nav>
+        <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+          <span class="theme-icon theme-icon-moon" aria-hidden="true">&#9790;</span>
+          <span class="theme-icon theme-icon-sun" aria-hidden="true">&#9788;</span>
+        </button>
       </div>
     </div>
 
@@ -121,5 +149,51 @@
       <p>Last updated: June 2026.</p>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var toggle = document.querySelector(".theme-toggle");
+      var themeColor = document.querySelector("#theme-color");
+      var systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+      function hasSavedTheme() {
+        try {
+          return localStorage.getItem("theme") === "light" || localStorage.getItem("theme") === "dark";
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function applyTheme(theme, remember) {
+        var isDark = theme === "dark";
+        root.dataset.theme = theme;
+        toggle.setAttribute("aria-pressed", String(isDark));
+        toggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+        toggle.setAttribute("title", isDark ? "Switch to light mode" : "Switch to dark mode");
+        themeColor.setAttribute("content", isDark ? "#16181b" : "#f7f7f4");
+
+        if (remember) {
+          try {
+            localStorage.setItem("theme", theme);
+          } catch (error) {
+            // The selected theme still applies when browser storage is unavailable.
+          }
+        }
+      }
+
+      applyTheme(root.dataset.theme || "light", false);
+
+      toggle.addEventListener("click", function () {
+        applyTheme(root.dataset.theme === "dark" ? "light" : "dark", true);
+      });
+
+      systemTheme.addEventListener("change", function (event) {
+        if (!hasSavedTheme()) {
+          applyTheme(event.matches ? "dark" : "light", false);
+        }
+      });
+    }());
+  </script>
 </body>
 </html>
