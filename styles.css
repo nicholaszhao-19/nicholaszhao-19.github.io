@@ -104,13 +104,13 @@ a:focus-visible {
 
 .theme-toggle {
   display: none;
-  width: 2.15rem;
-  height: 2.15rem;
+  width: 2.25rem;
+  height: 2.25rem;
   flex: 0 0 auto;
   place-items: center;
   padding: 0;
-  border: 1px solid var(--accent);
-  border-radius: 0.3rem;
+  border: 1.5px solid var(--accent);
+  border-radius: 0.42rem;
   background: transparent;
   color: var(--text);
   font: inherit;
@@ -134,9 +134,13 @@ a:focus-visible {
 }
 
 .theme-icon {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.3rem;
-  transform: translateY(-0.03rem);
+  display: block;
+  width: 1.18rem;
+  height: 1.18rem;
+  stroke: currentColor;
+  stroke-width: 2.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .theme-icon-sun {
@@ -148,7 +152,7 @@ a:focus-visible {
 }
 
 :root[data-theme="dark"] .theme-icon-sun {
-  display: inline;
+  display: block;
 }
 
 .header-grid {
