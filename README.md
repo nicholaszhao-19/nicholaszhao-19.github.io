@@ -23,7 +23,7 @@ Then visit `http://localhost:8000`.
 ## Maintenance
 
 - Add news to `.news-list` in `index.html`, newest first. Use `<time datetime="YYYY-MM-DD">Mon D, YYYY</time>` for confirmed announcement dates.
-- Update publications with links to papers, preprints, code, and related pages; keep acceptance status consistent with news.
+- Update publications with links to papers, preprints, code, and related pages; keep venue and track details consistent with news. Publication timeline dates use the first arXiv submission date, newest first, independently of conference news dates.
 - Add a CV section and navigation link when a downloadable CV is ready.
 - Add repository links when project code is available.
 - Add a talks section when slides or event details are available.
