@@ -26,7 +26,7 @@
 }
 
 * { box-sizing: border-box; }
-html { font-size: 16px; scroll-behavior: smooth; }
+html { font-size: 106.25%; scroll-behavior: smooth; }
 body {
   margin: 0;
   background: var(--background);
@@ -52,7 +52,7 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; border-
 .nav-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem 2rem; min-height: 5rem; }
 .nav-controls { display: flex; align-items: center; gap: 1.5rem; }
 .site-name { font-size: 0.9375rem; font-weight: 600; color: var(--text); text-decoration: none; }
-.section-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem 1.75rem; font-size: 0.875rem; }
+.section-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem 1.75rem; font-size: 0.9375rem; }
 .section-tabs a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); text-decoration: none; }
 .section-tabs a:hover { color: var(--accent); text-decoration: underline; }
 .theme-toggle { display: none; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
@@ -65,25 +65,25 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; border-
 section { scroll-margin-top: 2rem; }
 .intro { padding: 4.75rem 0 2.75rem; }
 .identity { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2rem; margin-bottom: 1.8rem; }
-.eyebrow { margin: 0 0 0.7rem; color: var(--accent); font-size: 0.875rem; font-weight: 500; letter-spacing: 0.06em; }
+.eyebrow { margin: 0 0 0.7rem; color: var(--accent); font-size: 1.125rem; font-weight: 500; letter-spacing: 0.025em; }
 h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 400; letter-spacing: -0.045em; line-height: 1.1; }
-.affiliation { margin: 0; padding-left: 1.5rem; border-left: 1px solid var(--line); color: var(--muted); font-size: 0.875rem; line-height: 1.65; }
+.affiliation { margin: 0; padding-left: 1.5rem; border-left: 1px solid var(--line); color: var(--muted); font-size: 0.9375rem; line-height: 1.65; }
 .affiliation > span { display: block; }
 .affiliation > span:first-child { margin-bottom: 0.25rem; font-weight: 500; color: var(--text); }
 p { margin: 0; }
 .bio { max-width: 720px; font-size: 1.0625rem; }
-.academic-links, .item-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.4rem; font-size: 0.875rem; }
+.academic-links, .item-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.4rem; font-size: 0.9375rem; }
 .academic-links { margin-top: 1.2rem; }
 .academic-links a, .item-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .section { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 2rem; padding: 2.5rem 0; border-top: 1px solid var(--line); }
-h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.25rem; font-weight: 400; line-height: 1.5; }
+h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.375rem; font-weight: 400; line-height: 1.5; }
 .research-section { padding-block: 1.8rem; }
-.research-section h2 { font-family: inherit; font-size: 0.875rem; font-weight: 500; line-height: 1.75; color: var(--muted); }
+.research-section h2 { font-family: inherit; font-size: 1rem; font-weight: 500; line-height: 1.75; color: var(--muted); }
 .interest-list { display: grid; grid-template-columns: 1fr 1.2fr; gap: 0.25rem 1.25rem; list-style: none; margin: 0; padding: 0; font-size: 0.9375rem; }
 .news-list, .publication-list { list-style: none; margin: 0; padding: 0; min-width: 0; }
 .news-list li { display: grid; grid-template-columns: 105px minmax(0, 1fr); gap: 1.5rem; }
 .news-list li + li { margin-top: 1.5rem; }
-.news-list time { padding-top: 0.15rem; color: var(--muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.news-list time { padding-top: 0.15rem; color: var(--muted); font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
 .news-list p { line-height: 1.75; }
 .news-list a { text-decoration: none; }
 .news-list a:hover { text-decoration: underline; }
@@ -108,14 +108,13 @@ strong { font-weight: 600; }
   background: var(--link-line);
   transform: translateX(-50%);
 }
-.publication-date { font-size: 0.875rem; line-height: 1.6; text-align: right; font-variant-numeric: tabular-nums; }
+.publication-date { font-size: 0.9375rem; line-height: 1.6; text-align: right; font-variant-numeric: tabular-nums; }
 .publication-date time { display: block; color: var(--text); font-weight: 500; }
 .publication-date time span { display: block; color: var(--muted); font-weight: 400; }
-.date-label { display: block; margin-top: 0.4rem; color: var(--muted); font-size: 0.875rem; }
 .timeline-marker { position: relative; z-index: 1; justify-self: center; margin-top: 0.4875rem; width: 0.625rem; height: 0.625rem; border: 2px solid var(--accent); border-radius: 50%; background: var(--background); }
 .publication-list article { min-width: 0; }
-.publication-venue { margin-bottom: 0.55rem; font-size: 0.875rem; color: var(--accent); font-weight: 500; line-height: 1.6; }
-.publication-type { margin-top: 0.4rem; font-size: 0.875rem; color: var(--muted); }
+.publication-venue { margin-bottom: 0.55rem; font-size: 0.9375rem; color: var(--accent); font-weight: 500; line-height: 1.6; }
+.publication-type { margin-top: 0.4rem; font-size: 0.9375rem; color: var(--muted); }
 .publication-type span { margin-inline: 0.3rem; }
 h3 { margin: 0; max-width: 650px; font-size: 1.125rem; font-weight: 600; line-height: 1.5; letter-spacing: -0.012em; }
 .authors { margin-top: 0.5rem; color: var(--muted); font-size: 0.9375rem; }
@@ -148,7 +147,6 @@ h3 { margin: 0; max-width: 650px; font-size: 1.125rem; font-weight: 600; line-he
   .publication-list > li:not(:last-child)::before { left: 0.375rem; }
   .publication-date { grid-column: 2; grid-row: 1; text-align: left; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.75rem; }
   .publication-date time span { display: inline; }
-  .date-label { margin-top: 0; }
   .timeline-marker { grid-column: 1; grid-row: 1; }
   .publication-list article { grid-column: 2; grid-row: 2; }
 }
