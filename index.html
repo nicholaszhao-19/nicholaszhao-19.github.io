@@ -175,7 +175,10 @@
         }
       }
 
-      function applyTheme(theme, remember) {
+      function applyTheme(theme, remember, animate) {
+        if (animate) {
+          root.classList.add("theme-transitions");
+        }
         var isDark = theme === "dark";
         root.dataset.theme = theme;
         toggle.setAttribute("aria-pressed", String(isDark));
@@ -195,12 +198,12 @@
       applyTheme(root.dataset.theme || "light", false);
 
       toggle.addEventListener("click", function () {
-        applyTheme(root.dataset.theme === "dark" ? "light" : "dark", true);
+        applyTheme(root.dataset.theme === "dark" ? "light" : "dark", true, true);
       });
 
       systemTheme.addEventListener("change", function (event) {
         if (!hasSavedTheme()) {
-          applyTheme(event.matches ? "dark" : "light", false);
+          applyTheme(event.matches ? "dark" : "light", false, true);
         }
       });
     }());

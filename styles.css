@@ -161,3 +161,15 @@ h3 { margin: 0; max-width: 650px; font-size: 1.125rem; font-weight: 600; line-he
   .publication-list li, .news-list li { break-inside: avoid; }
   a { color: inherit; }
 }
+
+/* Fade only colours after a theme interaction; initial page paint stays instant. */
+@media (prefers-reduced-motion: no-preference) {
+  :root.theme-transitions,
+  :root.theme-transitions *,
+  :root.theme-transitions *::before,
+  :root.theme-transitions *::after {
+    transition-property: background-color, color, border-color, text-decoration-color, fill, stroke;
+    transition-duration: 320ms;
+    transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
+  }
+}
