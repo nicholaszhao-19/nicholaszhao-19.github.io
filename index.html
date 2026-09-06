@@ -19,7 +19,7 @@
   <meta property="profile:first_name" content="Nicholas">
   <meta property="profile:last_name" content="Zhao">
   <meta property="profile:username" content="nicholaszhao-19">
-  <meta name="theme-color" content="#f7f7f4" id="theme-color">
+  <meta name="theme-color" content="#fafbfc" id="theme-color">
   <script>
     (function () {
       var root = document.documentElement;
@@ -46,17 +46,17 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header" id="top">
-    <div class="nav-shell">
-      <div class="container nav-bar">
-        <nav class="section-tabs" aria-label="Page sections">
-          <a href="#about">About Me</a>
-          <a href="#interests">Research</a>
-          <a href="#publications">Publications</a>
-          <a href="#cv">CV</a>
-          <a href="#projects">GitHub Repo</a>
-          <a href="#talks">Talks</a>
-        </nav>
+    <div class="container nav-bar">
+      <a class="site-name" href="#top" aria-label="Nicholas Zhao, back to top">Nicholas Zhao</a>
+      <div class="nav-controls">
+      <nav class="section-tabs" aria-label="Page sections">
+        <a href="#about">About</a>
+        <a href="#interests">Research</a>
+        <a href="#news">News</a>
+        <a href="#publications">Publications</a>
+      </nav>
         <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
           <svg class="theme-icon theme-icon-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none">
             <path d="M20.25 15.16A8.5 8.5 0 0 1 8.84 3.75 8.5 8.5 0 1 0 20.25 15.16Z" />
@@ -68,40 +68,36 @@
         </button>
       </div>
     </div>
-
-    <div class="container header-grid">
-      <div class="identity" itemscope itemtype="https://schema.org/Person">
-        <link itemprop="url" href="https://nicholaszhao-19.github.io/">
-        <meta itemprop="description" content="PhD researcher at Imperial College London working on quantum algorithms and lattice cryptanalysis.">
-        <h1 itemprop="name">Nicholas Zhao</h1>
-        <p class="role" itemprop="jobTitle">PhD Researcher</p>
-        <p class="affiliation" itemprop="affiliation" itemscope itemtype="https://schema.org/CollegeOrUniversity">
-          Department of Electrical and Electronic Engineering<br><span itemprop="name">Imperial College London</span>
-        </p>
-
-        <nav class="academic-links" aria-label="Academic profiles">
-          <a itemprop="sameAs" href="https://scholar.google.com/citations?hl=en&amp;user=gIssQtcAAAAJ&amp;view_op=list_works&amp;gmla=AIqSsVsnAuvtmsTvG4lguATUN4GdbTQSbwPrLc5AO9p9E_2yttEFuozWJOBI9M7CRsr4vJZiV7sfuUBn0RAVBMUx">Google Scholar</a>
-          <a itemprop="sameAs" href="https://orcid.org/0009-0002-0281-2435">ORCID</a>
-          <a itemprop="sameAs" href="https://github.com/nicholaszhao-19">GitHub</a>
-        </nav>
-      </div>
-    </div>
   </header>
 
-  <main class="container main-grid">
-    <section class="section" id="about">
-      <h2>About Me</h2>
-      <p>
-        I am a PhD researcher in the Department of Electrical and Electronic Engineering at Imperial College London,
-        where I am fortunate to be supervised by <a href="https://profiles.imperial.ac.uk/c.ling">Professor Cong Ling</a>.
-        My research focuses on quantum algorithms for
-        sampling problems, with particular interest in applications to lattice cryptanalysis. This website contains
-        my publications, GitHub repositories, talks, and CV.
-      </p>
+  <main class="container" id="main">
+    <section class="intro" id="about" aria-labelledby="name" itemscope itemtype="https://schema.org/Person">
+      <link itemprop="url" href="https://nicholaszhao-19.github.io/">
+      <meta itemprop="description" content="PhD researcher at Imperial College London working on quantum algorithms and lattice cryptanalysis.">
+      <div class="identity">
+        <div>
+          <p class="eyebrow" itemprop="jobTitle">PhD Researcher</p>
+          <h1 id="name" itemprop="name">Nicholas Zhao</h1>
+        </div>
+        <p class="affiliation" itemprop="affiliation" itemscope itemtype="https://schema.org/CollegeOrUniversity">
+          <span itemprop="name">Imperial College London</span>
+          <span>Department of Electrical and<br class="desktop-break"> Electronic Engineering</span>
+        </p>
+      </div>
+      <div class="bio">
+        <p>I am a PhD researcher at Imperial College London, supervised by
+          <a href="https://profiles.imperial.ac.uk/c.ling">Professor Cong Ling</a>.
+          I work on quantum algorithms for sampling problems, with a particular interest in their applications to lattice cryptanalysis.</p>
+      </div>
+      <nav class="academic-links" aria-label="Academic profiles">
+        <a itemprop="sameAs" href="https://scholar.google.com/citations?user=gIssQtcAAAAJ&amp;hl=en">Google Scholar</a>
+        <a itemprop="sameAs" href="https://orcid.org/0009-0002-0281-2435">ORCID</a>
+        <a itemprop="sameAs" href="https://github.com/nicholaszhao-19">GitHub</a>
+      </nav>
     </section>
 
-    <section class="section" id="interests">
-      <h2>Research Interests</h2>
+    <section class="section research-section" id="interests" aria-labelledby="research-heading">
+      <h2 id="research-heading">Research interests</h2>
       <ul class="interest-list">
         <li>Quantum algorithms</li>
         <li>Lattice cryptanalysis</li>
@@ -110,51 +106,50 @@
       </ul>
     </section>
 
-    <section class="section" id="publications">
-      <h2>Publications</h2>
-      <ol class="publication-list">
+    <section class="section" id="news" aria-labelledby="news-heading">
+      <h2 id="news-heading">News</h2>
+      <ol class="news-list">
         <li>
-          <span class="item-title">Improved Dual Attack and Trapdoor Sampling via Quantum Rejection Sampling</span>
-          <span class="item-meta"><span class="item-year">2026</span><span class="meta-separator">|</span> Nicholas Zhao, Hao Yan, Cong Ling.</span>
-          <span class="item-links"><a href="https://arxiv.org/abs/2605.24798">arXiv</a> · <a href="https://eprint.iacr.org/2026/979">ePrint</a> · <a href="https://scholar.google.com/scholar?q=%22Improved%20Dual%20Attack%20and%20Trapdoor%20Sampling%20via%20Quantum%20Rejection%20Sampling%22">Google Scholar</a></span>
-        </li>
-        <li>
-          <span class="item-title">Ancilla–Efficient QSAMPLE Preparation for Reversible Markov Chains</span>
-          <span class="item-meta"><span class="item-year">2026</span><span class="meta-separator">|</span> Nicholas Zhao.</span>
-          <span class="item-links"><a href="https://arxiv.org/abs/2605.23442">arXiv</a> · <a href="https://scholar.google.com/scholar?q=%22Ancilla%E2%80%93Efficient%20QSAMPLE%20Preparation%20for%20Reversible%20Markov%20Chains%22">Google Scholar</a></span>
+          <time datetime="2026-07-07">Jul 7, 2026</time>
+          <p>My paper “<a href="https://arxiv.org/abs/2605.23442">Ancilla–Efficient QSAMPLE Preparation for Reversible Markov Chains</a>” has been accepted by <strong>IEEE QCE 2026</strong>.</p>
         </li>
       </ol>
     </section>
 
-    <section class="section" id="cv">
-      <h2>CV</h2>
-      <p class="placeholder-note">
-        A downloadable CV will be added here when available.
-      </p>
-    </section>
-
-    <section class="section" id="projects">
-      <h2>GitHub Repo</h2>
-      <p class="placeholder-note">
-        Research code and project repositories will be listed here when they are available.
-        For now, see my <a href="https://github.com/nicholaszhao-19">GitHub profile</a>.
-      </p>
-    </section>
-
-    <section class="section" id="talks">
-      <h2>Talks</h2>
-      <p class="placeholder-note">
-        Talks, slides, and related materials will be listed here as they become available.
-      </p>
+    <section class="section" id="publications" aria-labelledby="publications-heading">
+      <h2 id="publications-heading">Publications</h2>
+      <ol class="publication-list">
+        <li>
+          <article aria-labelledby="dual-attack-title">
+            <p class="publication-venue">Preprint <span aria-hidden="true">·</span> 2026</p>
+            <h3 id="dual-attack-title">Improved Dual Attack and Trapdoor Sampling via Quantum Rejection Sampling</h3>
+            <p class="authors">Nicholas Zhao, Hao Yan, Cong Ling</p>
+            <nav class="item-links" aria-label="Improved Dual Attack paper links">
+              <a href="https://arxiv.org/abs/2605.24798">arXiv</a>
+              <a href="https://eprint.iacr.org/2026/979">ePrint</a>
+              <a href="https://scholar.google.com/scholar?q=%22Improved%20Dual%20Attack%20and%20Trapdoor%20Sampling%20via%20Quantum%20Rejection%20Sampling%22">Google Scholar</a>
+            </nav>
+          </article>
+        </li>
+        <li>
+          <article aria-labelledby="qsample-title">
+            <p class="publication-venue accepted">IEEE QCE 2026 <span aria-hidden="true">·</span> Accepted</p>
+            <h3 id="qsample-title">Ancilla–Efficient QSAMPLE Preparation for Reversible Markov Chains</h3>
+            <p class="authors">Nicholas Zhao</p>
+            <nav class="item-links" aria-label="Ancilla–Efficient QSAMPLE paper links">
+              <a href="https://arxiv.org/abs/2605.23442">arXiv</a>
+              <a href="https://scholar.google.com/scholar?q=%22Ancilla%E2%80%93Efficient%20QSAMPLE%20Preparation%20for%20Reversible%20Markov%20Chains%22">Google Scholar</a>
+            </nav>
+          </article>
+        </li>
+      </ol>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>Last updated: June 2026.</p>
-    </div>
+  <footer class="site-footer container">
+    <p>Nicholas Zhao <span aria-hidden="true">·</span> Imperial College London</p>
+    <p>Updated September 2026</p>
   </footer>
-
   <script>
     (function () {
       var root = document.documentElement;
@@ -176,7 +171,7 @@
         toggle.setAttribute("aria-pressed", String(isDark));
         toggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
         toggle.setAttribute("title", isDark ? "Switch to light mode" : "Switch to dark mode");
-        themeColor.setAttribute("content", isDark ? "#16181b" : "#f7f7f4");
+        themeColor.setAttribute("content", isDark ? "#191d23" : "#fafbfc");
 
         if (remember) {
           try {

@@ -1,7 +1,7 @@
 # Nicholas Zhao Academic Homepage
 
 Source files for Nicholas Zhao's academic [homepage](https://nicholaszhao-19.github.io/).
-The site is a minimal static GitHub Pages site built with HTML and CSS only.
+The site is a minimal static GitHub Pages site built with HTML and CSS, with a small script for the light/dark theme switch.
 
 ## Files
 
@@ -22,10 +22,11 @@ Then visit `http://localhost:8000`.
 
 ## Maintenance
 
-- Update publications with links to papers, preprints, code, and related pages.
-- Add `cv.pdf` when the CV is ready, then replace the CV placeholder with a download link.
+- Add news to `.news-list` in `index.html`, newest first. Use `<time datetime="YYYY-MM-DD">Mon D, YYYY</time>` for confirmed announcement dates.
+- Update publications with links to papers, preprints, code, and related pages; keep acceptance status consistent with news.
+- Add a CV section and navigation link when a downloadable CV is ready.
 - Add repository links when project code is available.
-- Add talks, slides, and event details as they become public.
+- Add a talks section when slides or event details are available.
 - Keep `sitemap.xml` current when the canonical URL or main page changes.
 
 ## Pre-Push Checks
