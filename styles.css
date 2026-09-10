@@ -78,7 +78,6 @@ p { margin: 0; }
 .section { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 2rem; padding: 2.5rem 0; border-top: 1px solid var(--line); }
 h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.375rem; font-weight: 400; line-height: 1.5; }
 .research-section { padding-block: 1.8rem; }
-.research-section h2 { font-family: inherit; font-size: 1rem; font-weight: 500; line-height: 1.75; color: var(--muted); }
 .interest-list { display: grid; grid-template-columns: 1fr 1.2fr; gap: 0.25rem 1.25rem; list-style: none; margin: 0; padding: 0; font-size: 0.9375rem; }
 .news-list, .publication-list { list-style: none; margin: 0; padding: 0; min-width: 0; }
 .news-list li { display: grid; grid-template-columns: 105px minmax(0, 1fr); gap: 1.5rem; }
