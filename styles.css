@@ -85,6 +85,12 @@ h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.375
 .news-list time { padding-top: 0.15rem; color: var(--muted); font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
 .news-list p { line-height: 1.75; }
 .news-list a { text-decoration: none; }
+.code-list { list-style: none; margin: 0; padding: 0; min-width: 0; }
+.code-list li + li { margin-top: 1.5rem; }
+.code-name { font-weight: 500; line-height: 1.6; }
+.code-name a { text-decoration: none; }
+.code-name a:hover { text-decoration: underline; }
+.code-desc { margin-top: 0.3rem; color: var(--muted); font-size: 0.9375rem; line-height: 1.7; }
 .news-list a:hover { text-decoration: underline; }
 strong { font-weight: 600; }
 /* Equal date gutters and centred markers keep every entry on one axis. */
@@ -137,7 +143,7 @@ h3 { margin: 0; max-width: 650px; font-size: 1.125rem; font-weight: 600; line-he
   .nav-bar { align-items: flex-start; flex-direction: column; }
   .site-name { padding-top: 0.25rem; }
   .nav-controls { width: 100%; gap: 0.6rem; }
-  .section-tabs { flex: 1; width: 100%; justify-content: space-between; gap: 0 0.5rem; }
+  .section-tabs { flex: 1; width: 100%; justify-content: space-between; gap: 0 0.35rem; font-size: 0.8125rem; }
   .intro { padding-block: 2.5rem 2rem; }
   .interest-list { grid-template-columns: 1fr; gap: 0.35rem; }
   .news-list li { grid-template-columns: 1fr; gap: 0.4rem; }
