@@ -19,7 +19,7 @@
   <meta property="profile:first_name" content="Nicholas">
   <meta property="profile:last_name" content="Zhao">
   <meta property="profile:username" content="nicholaszhao-19">
-  <meta name="theme-color" content="#030305" id="theme-color">
+  <meta name="theme-color" content="#04060d" id="theme-color">
   <script>
     (function () {
       var root = document.documentElement;
@@ -39,9 +39,9 @@
       root.dataset.theme = theme;
     }());
   </script>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="background.css?v=20261114">
-  <script src="background.js?v=20261114" defer></script>
+  <link rel="stylesheet" href="styles.css?v=20261114-sky">
+  <link rel="stylesheet" href="background.css?v=20261114-sky">
+  <script src="background.js?v=20261114-sky" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -93,6 +93,11 @@
         <a itemprop="sameAs" href="https://github.com/nicholaszhao-19">GitHub</a>
         <a href="mailto:nickzhao.works@gmail.com">nickzhao.works@gmail.com</a>
       </nav>
+      <div class="sky-guide" id="sky-guide" hidden>
+        <button type="button" id="show-einstein-ring" aria-describedby="sky-hint"
+          title="Align the Sun with a distant star. The lensing scale is enlarged for visibility.">Show Einstein ring</button>
+        <span id="sky-hint" role="status"></span>
+      </div>
     </section>
 
     <section class="section research-section" id="interests" aria-labelledby="research-heading">
@@ -190,7 +195,7 @@
         toggle.setAttribute("aria-pressed", String(isDark));
         toggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
         toggle.setAttribute("title", isDark ? "Switch to light mode" : "Switch to dark mode");
-        themeColor.setAttribute("content", isDark ? "#030305" : "#fafbfc");
+        themeColor.setAttribute("content", isDark ? "#04060d" : "#fafbfc");
 
         if (remember) {
           try {
