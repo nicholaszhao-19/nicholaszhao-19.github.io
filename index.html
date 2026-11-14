@@ -19,11 +19,11 @@
   <meta property="profile:first_name" content="Nicholas">
   <meta property="profile:last_name" content="Zhao">
   <meta property="profile:username" content="nicholaszhao-19">
-  <meta name="theme-color" content="#fafbfc" id="theme-color">
+  <meta name="theme-color" content="#030305" id="theme-color">
   <script>
     (function () {
       var root = document.documentElement;
-      var theme = "light";
+      var theme = "dark";
 
       root.classList.add("js");
 
@@ -31,21 +31,17 @@
         var savedTheme = localStorage.getItem("theme");
         if (savedTheme === "light" || savedTheme === "dark") {
           theme = savedTheme;
-        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          theme = "dark";
         }
       } catch (error) {
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          theme = "dark";
-        }
+        // The default theme applies when browser storage is unavailable.
       }
 
       root.dataset.theme = theme;
     }());
   </script>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="background.css?v=20260909">
-  <script src="background.js?v=20260909" defer></script>
+  <link rel="stylesheet" href="background.css?v=20261114">
+  <script src="background.js?v=20261114" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -184,15 +180,6 @@
       var root = document.documentElement;
       var toggle = document.querySelector(".theme-toggle");
       var themeColor = document.querySelector("#theme-color");
-      var systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
-
-      function hasSavedTheme() {
-        try {
-          return localStorage.getItem("theme") === "light" || localStorage.getItem("theme") === "dark";
-        } catch (error) {
-          return false;
-        }
-      }
 
       function applyTheme(theme, remember, animate) {
         if (animate) {
@@ -203,7 +190,7 @@
         toggle.setAttribute("aria-pressed", String(isDark));
         toggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
         toggle.setAttribute("title", isDark ? "Switch to light mode" : "Switch to dark mode");
-        themeColor.setAttribute("content", isDark ? "#191d23" : "#fafbfc");
+        themeColor.setAttribute("content", isDark ? "#030305" : "#fafbfc");
 
         if (remember) {
           try {
@@ -214,16 +201,10 @@
         }
       }
 
-      applyTheme(root.dataset.theme || "light", false);
+      applyTheme(root.dataset.theme || "dark", false);
 
       toggle.addEventListener("click", function () {
         applyTheme(root.dataset.theme === "dark" ? "light" : "dark", true, true);
-      });
-
-      systemTheme.addEventListener("change", function (event) {
-        if (!hasSavedTheme()) {
-          applyTheme(event.matches ? "dark" : "light", false, true);
-        }
       });
     }());
   </script>

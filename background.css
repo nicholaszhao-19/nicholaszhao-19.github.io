@@ -1,6 +1,7 @@
-/* Background only; the existing page's typography, content and geometry stay intact. */
+:root[data-theme="dark"] { --background: #030305; }
+
 body { isolation: isolate; }
-.atomic-background {
+.starfield {
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -8,4 +9,7 @@ body { isolation: isolate; }
   height: 100%;
   pointer-events: none;
 }
-@media print { .atomic-background { display: none; } }
+
+@media print {
+  .starfield { display: none; }
+}
