@@ -46,60 +46,11 @@ body > .site-footer {
     rgb(var(--sky-veil) / 0.14) calc(100% - var(--fade-edge)));
 }
 
-.sky-guide:not([hidden]) {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  column-gap: 0.85rem;
-  row-gap: 0.3rem;
-  margin-top: 0.7rem;
-  color: var(--muted);
-  font-size: 0.79rem;
-  line-height: 1.45;
-}
-.sky-guide button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 44px;
-  padding: 0.4rem 0.85rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgb(var(--sky-veil) / 0.88);
-  color: var(--accent);
-  font: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.sky-guide button::before {
-  content: "";
-  width: 0.62em;
-  height: 0.62em;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-}
-.sky-guide button[hidden] { display: none; }
-#toggle-sky-motion::before { content: none; }
-.sky-guide button:hover,
-.sky-guide button:focus-visible {
-  color: var(--accent-dark);
-  border-color: var(--accent);
-}
-.sky-guide button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
 @media (max-width: 760px) {
   :root[data-theme="dark"] { --sky-veil-opacity: 0.72; }
   .solar-sky::after { --reading-end: calc(100% - var(--reading-edge)); }
 }
 
-@media (max-width: 480px) {
-  .sky-guide:not([hidden]) { column-gap: 0.65rem; }
-  #sky-hint { flex-basis: 100%; }
-}
-
 @media print, (forced-colors: active) {
-  .solar-sky, .sky-guide:not([hidden]) { display: none; }
+  .solar-sky { display: none; }
 }

@@ -127,9 +127,7 @@ function buildSky(width, height, density, margin, dark) {
     exposures.push({ glow: magnitude < 5.4 ? starKernel(radius, peak, dark && magnitude < 1.3, rasterWidth) : null,
       flux: peak * Math.min(1.1, 1.85 * radius ** 2) });
   }
-  const beacon = starKernel(Math.max(1.5, 2.35 * density), dark ? 1 : 0.87, false, rasterWidth);
-  const beaconColor = dark ? [215, 235, 255] : [54, 100, 167];
-  return { image, dust, frame, centerX, centerY, focal, margin, palette, exposures, beacon, beaconColor };
+  return { image, dust, frame, centerX, centerY, focal, margin, palette, exposures };
 }
 
 function fromGalactic(x, y, z, axis) {
@@ -202,8 +200,8 @@ function paintBrightStar(pixels, offset, fractionX, fractionY, tint, kernel) {
   }
 }
 
-function drawSky(sky, stars, time, alignment) {
-  const { image, dust, centerX, centerY, focal, margin, palette, exposures, beacon, beaconColor } = sky;
+function drawSky(sky, stars, time) {
+  const { image, dust, centerX, centerY, focal, palette, exposures } = sky;
   const { data, width, height } = image;
   const stride = 4 * width;
   data.set(dust.data);
@@ -234,11 +232,6 @@ function drawSky(sky, stars, time, alignment) {
         blendStarPixel(data, offset + stride + 4, tint, flux * u * v);
       }
     }
-  }
-  // The aligned demonstration uses its own finite-sized background source.
-  if (alignment) {
-    const offset = stride * (margin + alignment.y) + 4 * (margin + alignment.x);
-    paintBrightStar(data, offset, 0, 0, beaconColor, beacon);
   }
 }
 
@@ -282,7 +275,7 @@ function buildLens(einsteinRadius, sourceWidth) {
   return { ...layer, image, extent, count, destination, source, mixX, mixY, exposure, stride };
 }
 
-function updateLens(lens, sky, x, y, contrast) {
+function updateLens(lens, sky, x, y) {
   const { count, destination, source, mixX, mixY, exposure, stride } = lens;
   const input = sky.image.data;
   const diffuse = sky.dust.data;
@@ -295,7 +288,7 @@ function updateLens(lens, sky, x, y, contrast) {
     const dx = mixX[i];
     const dy = mixY[i];
     const target = destination[i];
-    const gain = contrast * exposure[i];
+    const gain = exposure[i];
     for (let channel = 0; channel < 3; channel++) {
       const a = input[top + channel];
       const b = input[bottom + channel];
@@ -523,13 +516,8 @@ function mount() {
   wrapper.append(screen.canvas);
   document.body.prepend(wrapper);
 
-  const guide = document.querySelector("#sky-guide");
-  const hint = document.querySelector("#sky-hint");
-  const ringButton = document.querySelector("#show-einstein-ring");
-  const motionButton = document.querySelector("#toggle-sky-motion");
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const forcedColors = window.matchMedia("(forced-colors: active)");
-  const hover = window.matchMedia("(any-hover: hover)");
   const sun = { canvas: buildSun(), x: 0, y: 0, z: 0, reach: 23 * coronaExtent };
   const sprites = planets.map(buildPlanet);
   const extremes = sprites.map(planet => orbitBounds(planet, planet.radius * planet.span));
@@ -542,26 +530,12 @@ function mount() {
   let stars = null;
   let age = 0;
   let lastAnimation = null;
-  let paused = false;
-  let alignmentDemo = false;
   let needsResize = true;
   let skyDirty = true;
   let pointer = null;
   let touchStart = null;
 
-  function updateControls() {
-    ringButton.textContent = alignmentDemo ? "Hide Einstein ring" : "Show Einstein ring";
-    motionButton.textContent = paused ? "Resume sky" : "Pause sky";
-    motionButton.hidden = motion.matches;
-    hint.textContent = alignmentDemo
-      ? "An aligned star forms an Einstein ring."
-      : motion.matches
-        ? "Align a distant star to see a ring."
-        : hover.matches ? "Move your cursor to bend starlight." : "Tap the sky to bend starlight.";
-  }
-
   function target() {
-    if (alignmentDemo) return scene.alignment;
     if (motion.matches || !pointer) return null;
     const { rect, width, height } = scene;
     const x = (pointer.x - rect.left) * width / rect.width;
@@ -581,11 +555,6 @@ function mount() {
     const einsteinRadius = density * clamp(0.098 * Math.min(rect.width, rect.height), 29, 64);
     const margin = Math.ceil(lensExtent * einsteinRadius) + 3;
     const lens = buildLens(einsteinRadius, width + 2 * margin);
-    const inset = 1.24 * einsteinRadius;
-    const alignment = {
-      x: Math.round(clamp((rect.width > 760 ? 0.90 : 0.77) * width, Math.min(inset, width / 2), Math.max(width - inset, width / 2))),
-      y: Math.round((rect.width > 760 ? 0.34 : 0.50) * (height - 1))
-    };
     const dark = root.dataset.theme === "dark";
     const sky = buildSky(width, height, density, margin, dark);
     const solar = solarLayout(width, height, density, sprites, bounds);
@@ -593,7 +562,7 @@ function mount() {
       canvas.width = width;
       canvas.height = height;
     }
-    scene = { rect, width, height, density, sky, lens, solar, alignment, dark, previous: null };
+    scene = { rect, width, height, density, sky, lens, solar, dark, previous: null };
     skyDirty = true;
     return true;
   }
@@ -608,7 +577,7 @@ function mount() {
     const resized = needsResize && resize();
     if (!scene) return;
 
-    const playing = !paused && !motion.matches;
+    const playing = !motion.matches;
     const elapsed = lastAnimation === null ? 0 : now - lastAnimation;
     const advance = playing && (lastAnimation === null || elapsed >= frameInterval);
     const { sky, lens, solar, width, height, density, dark, previous } = scene;
@@ -623,7 +592,7 @@ function mount() {
     }
     const refresh = skyDirty;
     if (refresh) {
-      drawSky(sky, stars, stellarTimeFraction(age), alignmentDemo ? scene.alignment : null);
+      drawSky(sky, stars, stellarTimeFraction(age));
       sky.frame.context.putImageData(sky.image, -sky.margin, -sky.margin, sky.margin, sky.margin, width, height);
       skyDirty = false;
     }
@@ -631,7 +600,7 @@ function mount() {
     const position = target();
     const moved = position?.x !== previous?.x || position?.y !== previous?.y;
     if (position && (moved || refresh)) {
-      updateLens(lens, sky, position.x, position.y, alignmentDemo ? 0.24 : 1);
+      updateLens(lens, sky, position.x, position.y);
     }
     if (refresh || moved || orbitsChanged) {
       // Submit a single opaque canvas behind the page, with the lens between the sky and planets.
@@ -649,13 +618,6 @@ function mount() {
     queueFrame();
   }
 
-  function setAlignment(enabled) {
-    alignmentDemo = enabled;
-    skyDirty = true;
-    updateControls();
-    queueFrame();
-  }
-
   function clearPointer() {
     pointer = null;
     queueFrame();
@@ -663,8 +625,6 @@ function mount() {
 
   function follow(event) {
     if (motion.matches || forcedColors.matches || !event.isPrimary) return;
-    if (alignmentDemo && event.target.closest?.("#show-einstein-ring")) return;
-    if (alignmentDemo) setAlignment(false);
     pointer = { x: event.clientX, y: event.clientY };
     queueFrame();
   }
@@ -696,9 +656,7 @@ function mount() {
   motion.addEventListener("change", () => {
     lastAnimation = null;
     clearPointer();
-    updateControls();
   });
-  hover.addEventListener("change", updateControls);
   forcedColors.addEventListener("change", () => {
     lastAnimation = null;
     invalidateSky();
@@ -713,24 +671,9 @@ function mount() {
     clearPointer();
   });
   window.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-      clearPointer();
-      if (alignmentDemo) setAlignment(false);
-    }
-  });
-  ringButton.addEventListener("click", () => {
-    clearPointer();
-    setAlignment(!alignmentDemo);
-  });
-  motionButton.addEventListener("click", () => {
-    paused = !paused;
-    lastAnimation = null;
-    updateControls();
-    queueFrame();
+    if (event.key === "Escape") clearPointer();
   });
 
-  updateControls();
-  guide.hidden = false;
   queueFrame();
   loadCatalog().catch(error => {
     console.warn("Could not load the stellar catalog. Showing the backup sky.", error);
