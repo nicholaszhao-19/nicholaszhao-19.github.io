@@ -279,7 +279,7 @@ function buildLens(einsteinRadius, sourceWidth) {
       count++;
     }
   }
-  return { ...layer, image, extent, size, count, destination, source, mixX, mixY, exposure, stride };
+  return { ...layer, image, extent, count, destination, source, mixX, mixY, exposure, stride };
 }
 
 function updateLens(lens, sky, x, y, contrast) {
@@ -512,16 +512,15 @@ function drawSolarSystem(context, layout, sprites, sun, days, dark, density) {
 }
 
 function mount() {
-  const base = canvas2D(1, 1, { alpha: false });
-  const distortion = canvas2D(1, 1);
+  const screen = canvas2D(1, 1, { alpha: false });
   const foreground = canvas2D(1, 1);
-  if (!base.context || !distortion.context || !foreground.context) return;
+  if (!screen.context || !foreground.context) return;
 
   const root = document.documentElement;
   const wrapper = document.createElement("div");
   wrapper.className = "solar-sky";
   wrapper.setAttribute("aria-hidden", "true");
-  wrapper.append(base.canvas, distortion.canvas, foreground.canvas);
+  wrapper.append(screen.canvas);
   document.body.prepend(wrapper);
 
   const guide = document.querySelector("#sky-guide");
@@ -590,7 +589,7 @@ function mount() {
     const dark = root.dataset.theme === "dark";
     const sky = buildSky(width, height, density, margin, dark);
     const solar = solarLayout(width, height, density, sprites, bounds);
-    for (const { canvas } of [base, distortion, foreground]) {
+    for (const { canvas } of [screen, foreground]) {
       canvas.width = width;
       canvas.height = height;
     }
@@ -618,26 +617,28 @@ function mount() {
       age += Math.min(0.12, elapsed / 1000);
       skyDirty = true;
     }
-    if (resized || (advance && elapsed > 0)) {
+    const orbitsChanged = resized || (advance && elapsed > 0);
+    if (orbitsChanged) {
       drawSolarSystem(foreground.context, solar, sprites, sun, firstOrbitalDay + age * planetaryDaysPerSecond, dark, density);
     }
     const refresh = skyDirty;
     if (refresh) {
       drawSky(sky, stars, stellarTimeFraction(age), alignmentDemo ? scene.alignment : null);
-      // Upload the completed sky as a single image to its compositing layer.
       sky.frame.context.putImageData(sky.image, -sky.margin, -sky.margin, sky.margin, sky.margin, width, height);
-      base.context.drawImage(sky.frame.canvas, 0, 0);
       skyDirty = false;
     }
 
     const position = target();
     const moved = position?.x !== previous?.x || position?.y !== previous?.y;
-    if (moved && previous) {
-      distortion.context.clearRect(previous.x - lens.extent, previous.y - lens.extent, lens.size, lens.size);
-    }
     if (position && (moved || refresh)) {
       updateLens(lens, sky, position.x, position.y, alignmentDemo ? 0.24 : 1);
-      distortion.context.drawImage(lens.canvas, position.x - lens.extent, position.y - lens.extent);
+    }
+    if (refresh || moved || orbitsChanged) {
+      // Submit a single opaque canvas behind the page, with the lens between the sky and planets.
+      const { context } = screen;
+      context.drawImage(sky.frame.canvas, 0, 0);
+      if (position) context.drawImage(lens.canvas, position.x - lens.extent, position.y - lens.extent);
+      context.drawImage(foreground.canvas, 0, 0);
     }
     scene.previous = position;
     if (playing) queueFrame();
