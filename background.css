@@ -13,6 +13,7 @@ body > main,
 body > .site-footer {
   position: relative;
   z-index: 1;
+  transform: translateZ(0);
 }
 .solar-sky,
 .solar-sky canvas,

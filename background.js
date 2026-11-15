@@ -116,6 +116,7 @@ function buildSky(width, height, density, margin, dark) {
   paintMilkyWay(plate.context, rasterWidth, rasterHeight, centerX, centerY, focal, dark);
   const dust = plate.context.getImageData(0, 0, rasterWidth, rasterHeight);
   const image = plate.context.createImageData(rasterWidth, rasterHeight);
+  const frame = canvas2D(width, height, { alpha: false });
   const palette = dark ? starPalette : lightStarPalette;
   const exposures = [];
   for (let band = 0; band < 22; band++) {
@@ -128,7 +129,7 @@ function buildSky(width, height, density, margin, dark) {
   }
   const beacon = starKernel(Math.max(1.5, 2.35 * density), dark ? 1 : 0.87, false, rasterWidth);
   const beaconColor = dark ? [215, 235, 255] : [54, 100, 167];
-  return { image, dust, centerX, centerY, focal, margin, palette, exposures, beacon, beaconColor };
+  return { image, dust, frame, centerX, centerY, focal, margin, palette, exposures, beacon, beaconColor };
 }
 
 function fromGalactic(x, y, z, axis) {
@@ -623,7 +624,9 @@ function mount() {
     const refresh = skyDirty;
     if (refresh) {
       drawSky(sky, stars, stellarTimeFraction(age), alignmentDemo ? scene.alignment : null);
-      base.context.putImageData(sky.image, -sky.margin, -sky.margin, sky.margin, sky.margin, width, height);
+      // Upload the completed sky as a single image to its compositing layer.
+      sky.frame.context.putImageData(sky.image, -sky.margin, -sky.margin, sky.margin, sky.margin, width, height);
+      base.context.drawImage(sky.frame.canvas, 0, 0);
       skyDirty = false;
     }
 
