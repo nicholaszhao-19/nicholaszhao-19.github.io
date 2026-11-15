@@ -68,6 +68,8 @@ body { isolation: isolate; }
   border: 1px solid currentColor;
   border-radius: 50%;
 }
+.sky-guide button[hidden] { display: none; }
+#toggle-sky-motion::before { content: none; }
 .sky-guide button:hover,
 .sky-guide button:focus-visible {
   color: var(--accent-dark);
@@ -80,6 +82,7 @@ body { isolation: isolate; }
 
 @media (max-width: 480px) {
   .sky-guide:not([hidden]) { column-gap: 0.65rem; }
+  #sky-hint { flex-basis: 100%; }
 }
 
 @media print, (forced-colors: active) {

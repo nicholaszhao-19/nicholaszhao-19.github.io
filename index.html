@@ -40,8 +40,8 @@
     }());
   </script>
   <link rel="stylesheet" href="styles.css?v=20261114-sky">
-  <link rel="stylesheet" href="background.css?v=20261114-sky">
-  <script src="background.js?v=20261115-fixed-lens" defer></script>
+  <link rel="stylesheet" href="background.css?v=20261115-celestial">
+  <script type="module" src="background.js?v=20261115-celestial"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -96,6 +96,7 @@
       <div class="sky-guide" id="sky-guide" hidden>
         <button type="button" id="show-einstein-ring" aria-describedby="sky-hint"
           title="Align a magnified gravitational lens with a distant star.">Show Einstein ring</button>
+        <button type="button" id="toggle-sky-motion" title="Pause or resume the star and planet animation.">Pause sky</button>
         <span id="sky-hint" role="status"></span>
       </div>
     </section>
@@ -178,7 +179,8 @@
 
   <footer class="site-footer container">
     <p>Nicholas Zhao <span aria-hidden="true">·</span> Imperial College London</p>
-    <p>Updated September 2026</p>
+    <p>Updated September 2026 <span aria-hidden="true">·</span>
+      <a href="https://github.com/nicholaszhao-19/nicholaszhao-19.github.io#night-sky">Sky credits</a></p>
   </footer>
   <script>
     (function () {
