@@ -4,10 +4,16 @@
 }
 :root[data-theme="dark"] {
   --sky-veil: 4 6 13;
-  --sky-veil-opacity: 0.69;
+  --sky-veil-opacity: 0.63;
 }
 
 body { isolation: isolate; }
+body > .site-header,
+body > main,
+body > .site-footer {
+  position: relative;
+  z-index: 1;
+}
 .solar-sky,
 .solar-sky canvas,
 .solar-sky::after {
@@ -17,7 +23,9 @@ body { isolation: isolate; }
 .solar-sky {
   position: fixed;
   overflow: hidden;
-  z-index: -1;
+  z-index: 0;
+  contain: strict;
+  transform: translateZ(0);
 }
 .solar-sky canvas {
   position: absolute;
@@ -27,12 +35,13 @@ body { isolation: isolate; }
 .solar-sky::after {
   --reading-edge: max(0.85rem, calc(50% - var(--max-width) / 2));
   --fade-edge: max(0px, calc(var(--reading-edge) - 6rem));
+  --reading-end: max(55%, calc(100% - var(--reading-edge) - 5rem));
   position: absolute;
   content: "";
   background: linear-gradient(to right,
     rgb(var(--sky-veil) / 0.14) var(--fade-edge),
     rgb(var(--sky-veil) / var(--sky-veil-opacity)) var(--reading-edge),
-    rgb(var(--sky-veil) / var(--sky-veil-opacity)) calc(100% - var(--reading-edge)),
+    rgb(var(--sky-veil) / var(--sky-veil-opacity)) var(--reading-end),
     rgb(var(--sky-veil) / 0.14) calc(100% - var(--fade-edge)));
 }
 
@@ -78,6 +87,11 @@ body { isolation: isolate; }
 .sky-guide button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="dark"] { --sky-veil-opacity: 0.72; }
+  .solar-sky::after { --reading-end: calc(100% - var(--reading-edge)); }
 }
 
 @media (max-width: 480px) {

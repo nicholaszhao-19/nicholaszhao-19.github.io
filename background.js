@@ -63,7 +63,7 @@ function paintMilkyWay(context, width, height, centerX, centerY, focal, dark) {
       const dust = Math.exp(-530 * dustCenter ** 2) * (0.37 + 0.62 * wisps);
       const disk = Math.exp(-7 * Math.abs(galacticZ)) * (11 + 24 * clouds * wisps);
       const bulge = Math.exp(-9 * (1 - galacticX) - 42 * galacticZ ** 2) * (12 + 25 * clouds);
-      const light = (disk + bulge) * (1 - 0.80 * dust);
+      const light = 1.18 * (disk + bulge) * (1 - 0.80 * dust);
       const blue = clamp(0.35 + 0.6 * clouds - 0.3 * galacticX);
       const haze = 3 * fractal(2.2 * u - 7, 3.8 * v + 42);
       const k = 4 * (j * image.width + i);
@@ -121,10 +121,10 @@ function buildSky(width, height, density, margin, dark) {
   for (let band = 0; band < 22; band++) {
     const magnitude = 0.5 * band - 1.5;
     const exposure = 10 ** (-0.25 * (magnitude - 5));
-    const peak = (dark ? 1 : 0.54) * (0.12 + 0.81 * exposure / (exposure + 0.78));
+    const peak = (dark ? 1 : 0.54) * (0.17 + 0.81 * exposure / (exposure + 0.78));
     const radius = Math.max(0.55, density * (0.48 + 1.43 / (1 + 0.20 * Math.max(0, magnitude) ** 2)));
     exposures.push({ glow: magnitude < 5.4 ? starKernel(radius, peak, dark && magnitude < 1.3, rasterWidth) : null,
-      flux: peak * Math.min(1.1, 1.55 * radius ** 2) });
+      flux: peak * Math.min(1.1, 1.85 * radius ** 2) });
   }
   const beacon = starKernel(Math.max(1.5, 2.35 * density), dark ? 1 : 0.87, false, rasterWidth);
   const beaconColor = dark ? [215, 235, 255] : [54, 100, 167];
