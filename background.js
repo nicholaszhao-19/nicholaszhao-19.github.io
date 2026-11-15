@@ -253,6 +253,7 @@ function buildLens(einsteinRadius, sourceWidth) {
   const source = new Int32Array(capacity);
   const mixX = new Float32Array(capacity);
   const mixY = new Float32Array(capacity);
+  const exposure = new Float32Array(capacity);
   let count = 0;
 
   // Store a bilinear source lookup for each pixel in the local lens patch.
@@ -269,16 +270,21 @@ function buildLens(einsteinRadius, sourceWidth) {
       source[count] = 4 * left + stride * top;
       mixX[count] = u - left;
       mixY[count] = v - top;
+      // Bring out the lensed stars against the reading veil, especially near the critical curve.
+      const scaledRadius = radius / einsteinRadius;
+      const fade = 1 - smooth(clamp((scaledRadius - 1.24) / (lensExtent - 1.24)));
+      exposure[count] = fade * (0.16 + 1.9 * Math.exp(-(((scaledRadius - 1) / 0.43) ** 2)));
       image.data[destination[count] + 3] = 255;
       count++;
     }
   }
-  return { ...layer, image, extent, size, count, destination, source, mixX, mixY, stride };
+  return { ...layer, image, extent, size, count, destination, source, mixX, mixY, exposure, stride };
 }
 
-function updateLens(lens, sky, x, y) {
-  const { count, destination, source, mixX, mixY, stride } = lens;
+function updateLens(lens, sky, x, y, contrast) {
+  const { count, destination, source, mixX, mixY, exposure, stride } = lens;
   const input = sky.image.data;
+  const diffuse = sky.dust.data;
   const origin = stride * (y + sky.margin) + 4 * (x + sky.margin);
   const output = lens.image.data;
 
@@ -288,12 +294,16 @@ function updateLens(lens, sky, x, y) {
     const dx = mixX[i];
     const dy = mixY[i];
     const target = destination[i];
+    const gain = contrast * exposure[i];
     for (let channel = 0; channel < 3; channel++) {
       const a = input[top + channel];
       const b = input[bottom + channel];
       const upper = a + dx * (input[top + channel + 4] - a);
       const lower = b + dx * (input[bottom + channel + 4] - b);
-      output[target + channel] = upper + (lower - upper) * dy;
+      const lensed = upper + (lower - upper) * dy;
+      const dustUpper = mix(diffuse[top + channel], diffuse[top + channel + 4], dx);
+      const dustLower = mix(diffuse[bottom + channel], diffuse[bottom + channel + 4], dx);
+      output[target + channel] = lensed + gain * (lensed - mix(dustUpper, dustLower, dy));
     }
   }
   lens.context.putImageData(lens.image, 0, 0);
@@ -623,7 +633,7 @@ function mount() {
       distortion.context.clearRect(previous.x - lens.extent, previous.y - lens.extent, lens.size, lens.size);
     }
     if (position && (moved || refresh)) {
-      updateLens(lens, sky, position.x, position.y);
+      updateLens(lens, sky, position.x, position.y, alignmentDemo ? 0.24 : 1);
       distortion.context.drawImage(lens.canvas, position.x - lens.extent, position.y - lens.extent);
     }
     scene.previous = position;
