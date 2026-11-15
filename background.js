@@ -464,7 +464,7 @@
       const scale = Math.min(preferredScale, (width - 2 * padding) / (rightEdge - leftEdge),
         (height - 2 * padding) / (bottomEdge - topEdge));
       const centerX = clamp(rightSide * width, padding - leftEdge * scale, width - padding - rightEdge * scale);
-      const centerY = clamp(height * 0.31, padding - topEdge * scale, height - padding - bottomEdge * scale);
+      const centerY = clamp(height * 0.58, padding - topEdge * scale, height - padding - bottomEdge * scale);
       for (const body of bodies) {
         const reach = body.reach * scale;
         foreground.context.drawImage(body.canvas, centerX + body.x * scale - reach,
