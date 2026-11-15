@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  const tau = 2 * Math.PI;
   const orbitTilt = -0.20;
   const ringTilt = -0.38;
   const cosOrbitTilt = Math.cos(orbitTilt);
@@ -132,16 +131,9 @@
     return { canvas: source.canvas, image, margin };
   }
 
-  function lensScale(radius, einsteinRadius, inner, outer) {
-    // Point-mass thin lens: beta = theta (1 - theta_E^2 / |theta|^2).
-    // Fade only the weak-field tail so the computed patch joins the stationary sky.
-    const weight = 1 - smooth(clamp((radius - inner) / (outer - inner)));
-    return 1 - weight * (einsteinRadius / radius) ** 2;
-  }
-
-  function buildLens(sky, einsteinRadius, solarRadius) {
-    // Both images must use the untapered map when the secondary clears the Sun.
-    const inner = einsteinRadius ** 2 / solarRadius;
+  function buildLens(sky, einsteinRadius) {
+    const core = 0.68 * einsteinRadius;
+    const inner = 1.75 * einsteinRadius;
     const outer = 3.25 * einsteinRadius;
     const extent = Math.ceil(outer);
     const size = 2 * extent + 1;
@@ -156,12 +148,18 @@
     const mixY = new Float32Array(capacity);
     let count = 0;
 
-    // The mapping depends only on position relative to the Sun and can be cached.
+    // The map depends only on position relative to the cursor and can be cached.
+    // Outside the finite core, use beta = theta (1 - theta_E^2 / |theta|^2),
+    // tapering the far field smoothly to the untouched sky at the patch edge.
     for (let y = -extent; y <= extent; y++) {
       for (let x = -extent; x <= extent; x++) {
         const radius = Math.hypot(x, y);
-        if (radius <= solarRadius || radius >= outer) continue;
-        const factor = lensScale(radius, einsteinRadius, inner, outer);
+        if (radius >= outer) continue;
+        const inverseRadiusSquared = radius < core
+          ? (2 - (radius / core) ** 2) / core ** 2
+          : 1 / radius ** 2;
+        const weight = 1 - smooth(clamp((radius - inner) / (outer - inner)));
+        const factor = 1 - weight * einsteinRadius ** 2 * inverseRadiusSquared;
         const u = x * factor;
         const v = y * factor;
         const left = Math.floor(u);
@@ -251,16 +249,16 @@
     return layer.canvas;
   }
 
-  // Radii, orbital distances and periods are spaced for visibility in the illustration.
+  // A fixed view of the eight planets. Sizes and orbital distances are compressed for visibility.
   const planetSettings = [
-    { name: "Mercury", orbit: 47, radius: 3.3, period: 14, phase: 0.80, base: [157, 148, 141] },
-    { name: "Venus", orbit: 66, radius: 4.8, period: 23, phase: 4.18, base: [220, 166, 104] },
-    { name: "Earth", orbit: 87, radius: 5.4, period: 33, phase: 5.25, base: [39, 99, 178] },
-    { name: "Mars", orbit: 111, radius: 4.2, period: 44, phase: 3.72, base: [205, 104, 64] },
-    { name: "Jupiter", orbit: 151, radius: 13.5, period: 66, phase: 3.40, base: [215, 173, 133] },
-    { name: "Saturn", orbit: 194, radius: 10.2, period: 88, phase: 1.31, base: [217, 188, 130] },
-    { name: "Uranus", orbit: 239, radius: 6.8, period: 120, phase: 4.53, base: [133, 207, 213] },
-    { name: "Neptune", orbit: 282, radius: 6.7, period: 157, phase: 4.98, base: [78, 116, 209] }
+    { name: "Mercury", orbit: 47, radius: 4.2, phase: 5.46, base: [157, 148, 141] },
+    { name: "Venus", orbit: 66, radius: 5.8, phase: 3.94, base: [220, 166, 104] },
+    { name: "Earth", orbit: 87, radius: 6.0, phase: 5.76, base: [39, 99, 178] },
+    { name: "Mars", orbit: 111, radius: 4.7, phase: 3.32, base: [205, 104, 64] },
+    { name: "Jupiter", orbit: 151, radius: 14.0, phase: 4.18, base: [215, 173, 133] },
+    { name: "Saturn", orbit: 194, radius: 11.8, phase: 5.55, base: [217, 188, 130] },
+    { name: "Uranus", orbit: 239, radius: 7.6, phase: 4.65, base: [133, 207, 213] },
+    { name: "Neptune", orbit: 282, radius: 7.4, phase: 3.18, base: [116, 177, 204] }
   ];
 
   function planetColor(planet, x, y, z) {
@@ -372,28 +370,30 @@
     planet.context.putImageData(image, 0, 0);
   }
 
-  function orbitPosition(planet, seconds, scale) {
-    const angle = planet.phase + tau * seconds / planet.period;
-    const radius = planet.orbit * scale;
-    const planeX = Math.cos(angle);
-    const orbitY = Math.sin(angle);
+  function buildPlanetSprite(settings) {
+    const planet = buildPlanet(settings);
+    const planeX = Math.cos(planet.phase);
+    const orbitY = Math.sin(planet.phase);
     const planeY = 0.54 * orbitY;
     const x = cosOrbitTilt * planeX - sinOrbitTilt * planeY;
     const y = sinOrbitTilt * planeX + cosOrbitTilt * planeY;
     const z = Math.sqrt(1 - 0.54 ** 2) * orbitY;
-    return { planet, x: radius * x, y: radius * y, z: radius * z, light: [-x, -y, -z] };
+    shadePlanet(planet, -x, -y, -z);
+    return { canvas: planet.canvas, x: planet.orbit * x, y: planet.orbit * y,
+      z: planet.orbit * z, reach: planet.radius * planet.span };
   }
 
   function mount() {
     const base = canvas2D(1, 1);
+    const distortion = canvas2D(1, 1);
     const foreground = canvas2D(1, 1);
-    if (!base.context || !foreground.context) return;
+    if (!base.context || !distortion.context || !foreground.context) return;
 
     const root = document.documentElement;
     const wrapper = document.createElement("div");
     wrapper.className = "solar-sky";
     wrapper.setAttribute("aria-hidden", "true");
-    wrapper.append(base.canvas, foreground.canvas);
+    wrapper.append(base.canvas, distortion.canvas, foreground.canvas);
     document.body.prepend(wrapper);
 
     const guide = document.querySelector("#sky-guide");
@@ -402,13 +402,14 @@
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const forcedColors = window.matchMedia("(forced-colors: active)");
     const hover = window.matchMedia("(any-hover: hover)");
-    const sun = buildSun();
-    const planets = planetSettings.map(buildPlanet);
-    const outerOrbit = Math.max(...planets.map(planet => planet.orbit + planet.radius * planet.span));
+    const sun = { canvas: buildSun(), x: 0, y: 0, z: 0, reach: 26 * coronaExtent };
+    const bodies = [...planetSettings.map(buildPlanetSprite), sun].sort((a, b) => a.z - b.z);
+    const leftEdge = Math.min(...bodies.map(body => body.x - body.reach));
+    const rightEdge = Math.max(...bodies.map(body => body.x + body.reach));
+    const topEdge = Math.min(...bodies.map(body => body.y - body.reach));
+    const bottomEdge = Math.max(...bodies.map(body => body.y + body.reach));
     let scene;
     let frame = null;
-    let lastDraw = null;
-    let elapsed = 0;
     let alignmentDemo = false;
     let needsResize = true;
     let pointer = null;
@@ -416,123 +417,88 @@
 
     function updateHint() {
       hint.textContent = alignmentDemo
-        ? "Starlight forms a ring around the aligned Sun."
+        ? "An aligned background star appears as an Einstein ring."
         : motion.matches || !hover.matches
           ? "See how a background star bends into a ring."
-          : "Move your pointer to bend starlight.";
-    }
-
-    function point(x, y) {
-      const rect = wrapper.getBoundingClientRect();
-      return {
-        x: clamp((x - rect.left) / rect.width),
-        y: clamp((y - rect.top) / rect.height)
-      };
+          : "Move your pointer to bend nearby starlight.";
     }
 
     function target() {
       if (alignmentDemo) return scene.alignment;
-      if (motion.matches || !pointer) return scene.rest;
-      return { x: pointer.x * (scene.width - 1), y: pointer.y * (scene.height - 1) };
+      if (motion.matches || !pointer) return null;
+      const { rect, width, height } = scene;
+      const x = (pointer.x - rect.left) * width / rect.width;
+      const y = (pointer.y - rect.top) * height / rect.height;
+      if (x < 0 || x >= width || y < 0 || y >= height) return null;
+      return { x: Math.min(Math.round(x), width - 1), y: Math.min(Math.round(y), height - 1) };
     }
 
     function resize() {
       needsResize = false;
-      const old = scene;
       const rect = wrapper.getBoundingClientRect();
       if (rect.width < 1 || rect.height < 1) return;
       const density = Math.min(window.devicePixelRatio || 1, 1.5,
         Math.sqrt(2450000 / (rect.width * rect.height)), 3000 / Math.max(rect.width, rect.height));
       const width = Math.max(1, Math.round(rect.width * density));
       const height = Math.max(1, Math.round(rect.height * density));
-      const scale = density * clamp(Math.min(rect.width / 1040, rect.height / 840), 0.60, 1.22);
-      const solarRadius = 26 * scale;
-      const einsteinRadius = 58 * scale;
-      const margin = Math.ceil(Math.max(3.25 * einsteinRadius, einsteinRadius ** 2 / solarRadius)) + 2;
+      const einsteinRadius = density * clamp(0.08 * Math.min(rect.width, rect.height), 24, 48);
+      const margin = Math.ceil(3.25 * einsteinRadius) + 2;
       const rightSide = rect.width > 1090 ? clamp(0.5 + 570 / rect.width, 0.845, 0.925) : 0.73;
-      const alignment = { x: Math.round((width - 1) * rightSide), y: Math.round((height - 1) * 0.54) };
-      const rest = { x: alignment.x, y: Math.round((height - 1) * 0.30) };
+      const inset = Math.ceil(1.3 * einsteinRadius);
+      const alignment = {
+        x: Math.round(clamp(rightSide * width, Math.min(inset, width / 2), Math.max(width - inset, width / 2))),
+        y: Math.round(height * 0.54)
+      };
       const sky = buildSky(width, height, density, margin, root.dataset.theme === "dark", alignment);
-      const lens = buildLens(sky, einsteinRadius, solarRadius);
+      const lens = buildLens(sky, einsteinRadius);
 
-      for (const { canvas } of [base, foreground]) {
+      for (const { canvas } of [base, distortion, foreground]) {
         canvas.width = width;
         canvas.height = height;
       }
       base.context.drawImage(sky.canvas, margin, margin, width, height, 0, 0, width, height);
-      scene = { width, height, scale, solarRadius, sky, lens, alignment, rest, previous: null };
-      scene.center = old && pointer && !alignmentDemo && !motion.matches
-        ? { x: old.center.x * width / old.width, y: old.center.y * height / old.height }
-        : { ...target() };
-    }
+      scene = { rect, width, height, sky, lens, alignment, previous: null };
 
-    function draw(seconds) {
-      const { context } = foreground;
-      const { scale, solarRadius, center, sky, lens, previous } = scene;
-      const x = clamp(Math.round(center.x), 0, scene.width - 1);
-      const y = clamp(Math.round(center.y), 0, scene.height - 1);
-      const extent = Math.max(lens.extent, Math.ceil(outerOrbit * scale) + 2);
-      if (previous) {
-        context.clearRect(previous.x - extent, previous.y - extent, 2 * extent + 1, 2 * extent + 1);
-      }
-      scene.previous = { x, y };
-      updateLens(lens, sky, x, y);
-      context.drawImage(lens.canvas, x - lens.extent, y - lens.extent);
-
-      const bodies = planets.map(planet => orbitPosition(planet, seconds, scale));
-      bodies.push({ z: 0 });
-      bodies.sort((a, b) => a.z - b.z);
+      const padding = Math.min(14 * density, 0.04 * Math.min(width, height));
+      const preferredScale = density * clamp(Math.min(rect.width / 960, rect.height / 690), 0.74, 1.28);
+      const scale = Math.min(preferredScale, (width - 2 * padding) / (rightEdge - leftEdge),
+        (height - 2 * padding) / (bottomEdge - topEdge));
+      const centerX = clamp(rightSide * width, padding - leftEdge * scale, width - padding - rightEdge * scale);
+      const centerY = clamp(height * 0.31, padding - topEdge * scale, height - padding - bottomEdge * scale);
       for (const body of bodies) {
-        if (!body.planet) {
-          const reach = solarRadius * coronaExtent;
-          context.drawImage(sun, x - reach, y - reach, 2 * reach, 2 * reach);
-          continue;
-        }
-        const { planet, light } = body;
-        const reach = planet.radius * scale * planet.span;
-        const left = x + body.x - reach;
-        const top = y + body.y - reach;
-        if (left >= scene.width || left + 2 * reach < 0 || top >= scene.height || top + 2 * reach < 0) continue;
-        shadePlanet(planet, ...light);
-        context.drawImage(planet.canvas, left, top, 2 * reach, 2 * reach);
+        const reach = body.reach * scale;
+        foreground.context.drawImage(body.canvas, centerX + body.x * scale - reach,
+          centerY + body.y * scale - reach, 2 * reach, 2 * reach);
       }
     }
 
     function queueFrame() {
-      if (!document.hidden && !forcedColors.matches && frame === null) frame = window.requestAnimationFrame(tick);
+      if (!document.hidden && !forcedColors.matches && frame === null) frame = window.requestAnimationFrame(draw);
     }
 
-    function tick(now) {
+    function draw() {
       frame = null;
       if (forcedColors.matches) return;
       if (needsResize) resize();
       if (!scene) return;
 
-      const delta = lastDraw === null ? 0 : Math.min(80, now - lastDraw);
-      // Bound raster work while the point-mass patch follows the pointer.
-      if (lastDraw !== null && !motion.matches && delta < 22) {
-        queueFrame();
-        return;
+      const position = target();
+      const { sky, lens, previous } = scene;
+      const { extent } = lens;
+      const size = 2 * extent + 1;
+      if (position && previous?.x === position.x && previous.y === position.y) return;
+      if (previous) {
+        distortion.context.clearRect(previous.x - extent, previous.y - extent, size, size);
       }
-      lastDraw = now;
-      elapsed += motion.matches ? 0 : delta;
-      const destination = target();
-      const { center } = scene;
-
-      if (alignmentDemo || motion.matches || Math.hypot(center.x - destination.x, center.y - destination.y) < 0.5) {
-        Object.assign(center, destination);
-      } else {
-        const easing = 1 - Math.exp(-delta / 42);
-        center.x = mix(center.x, destination.x, easing);
-        center.y = mix(center.y, destination.y, easing);
+      if (position) {
+        updateLens(lens, sky, position.x, position.y);
+        distortion.context.drawImage(lens.canvas, position.x - extent, position.y - extent);
       }
-      draw(elapsed / 1000);
-      if (!motion.matches) queueFrame();
+      scene.previous = position;
     }
 
     function invalidateSky() {
       needsResize = true;
-      lastDraw = null;
       queueFrame();
     }
 
@@ -543,7 +509,12 @@
         alignmentDemo = false;
         updateHint();
       }
-      pointer = point(event.clientX, event.clientY);
+      pointer = { x: event.clientX, y: event.clientY };
+      queueFrame();
+    }
+
+    function clearPointer() {
+      pointer = null;
       queueFrame();
     }
 
@@ -561,27 +532,24 @@
       touchStart = null;
     }, { passive: true });
     window.addEventListener("pointercancel", () => { touchStart = null; });
-    root.addEventListener("pointerleave", () => { pointer = null; });
+    root.addEventListener("pointerleave", clearPointer);
+    window.addEventListener("blur", clearPointer);
     window.addEventListener("resize", invalidateSky, { passive: true });
     new MutationObserver(invalidateSky).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
     motion.addEventListener("change", () => {
-      pointer = null;
-      lastDraw = null;
+      clearPointer();
       updateHint();
-      queueFrame();
     });
     hover.addEventListener("change", updateHint);
     forcedColors.addEventListener("change", invalidateSky);
     document.addEventListener("visibilitychange", () => {
-      lastDraw = null;
       touchStart = null;
-      if (!document.hidden) {
-        queueFrame();
-      } else if (frame !== null) {
+      if (document.hidden && frame !== null) {
         window.cancelAnimationFrame(frame);
         frame = null;
       }
+      clearPointer();
     });
     ringButton.addEventListener("click", () => {
       alignmentDemo = true;
